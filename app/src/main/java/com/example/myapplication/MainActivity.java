@@ -9,6 +9,7 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    public void buttonClick(View view) {
+    public void returnedHome(View view) {
         Log.e("------------------","WORKS");
         oncreateStuff();
     }
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //setContentView(R.layout.activity_details);
+
 
                 return false;
             }
