@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,10 +46,19 @@ public class GetFromAPI {
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
         return root.getAsJsonObject().get("results").getAsJsonArray().get(0).getAsJsonObject().get("locations").getAsJsonArray().get(0).getAsJsonObject().get("adminArea3").toString().replaceAll("\"","");
     }
-    public static String testMotiAPI() throws IOException, JSONException {
-        JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/");
+    public static String testMotiAPI(double[] in) throws IOException, JSONException {
+        JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
-        return root.getAsJsonObject().get("Alabama").getAsJsonObject().get("districts").getAsJsonArray().get(0).toString().replaceAll("\"","");
+        try{
+            String a = root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)).toString().replaceAll("\"","");
+            return root.getAsJsonObject().get("districts").getAsJsonArray().get(Integer.parseInt(a)).toString().replaceAll("\"","");
+        }catch (Exception e){
+            return "error";
+        }
 
+    }
+    public static JsonObject repDetails(double[] in) throws IOException, JSONException {
+        JsonElement root = new Gson().fromJson(testMotiAPI(in), JsonElement.class);
+        return root.getAsJsonObject();
     }
 }

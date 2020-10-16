@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity{
                 latLong[0]=p.getLatitude();
                 latLong[1]=p.getLongitude();
                 try {
-                    Toast.makeText(getBaseContext(), GetFromAPI.testMotiAPI(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), GetFromAPI.testMotiAPI(latLong),Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
