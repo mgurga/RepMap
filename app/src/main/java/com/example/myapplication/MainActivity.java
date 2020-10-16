@@ -2,10 +2,13 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,66 +31,13 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity{
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //handle permissions first, before map is created. not depicted here
 
         //load/initialize the osmdroid configuration, this can be done
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        //setting this before the layout is inflated is a good idea
-        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
-        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
-        //see also StorageUtils
-        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's
-        //tile servers will get you banned based on this string
-
-        //inflate and create the map
-        setContentView(R.layout.activity_main);
-        //BoundingBox box = new BoundingBox(49.002389,  -66.949895, 24,-124.733056);
-        //map.setScrollableAreaLimitDouble(new BoundingBox(49.002389,  -66.949895, 24,-124.733056));
-        map = (MapView) findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        BoundingBox box = new BoundingBox(49.002389, -66.949895, 24, -124.733056);
-        map.setScrollableAreaLimitDouble(box);
-        IMapController mapController = map.getController();
-        mapController.setZoom(4.4);
-        map.setMinZoomLevel(4.4);
-        MapEventsReceiver mReceive = new MapEventsReceiver() {
-            @Override
-            public boolean singleTapConfirmedHelper(GeoPoint p) {
-                double[] latLong = new double[2];
-                latLong[0]=p.getLatitude();
-                latLong[1]=p.getLongitude();
-                try {
-                    Toast.makeText(getBaseContext(), GetFromAPI.testMotiAPI(latLong),Toast.LENGTH_SHORT).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-
-            @Override
-            public boolean longPressHelper(GeoPoint p) {
-                return false;
-            }
-        };
-        MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
-        map.getOverlays().add(OverlayEvents);
-        requestPermissionsIfNecessary(new String[] {
-                // if you need to show the current location, uncomment the line below
-                // Manifest.permission.ACCESS_FINE_LOCATION,
-                // WRITE_EXTERNAL_STORAGE is required in order to show the map
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        });
+        oncreateStuff();
     }
 
     @Override
@@ -139,5 +89,66 @@ public class MainActivity extends AppCompatActivity{
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+    }
+
+    public void buttonClick(View view) {
+        Log.e("------------------","WORKS");
+        oncreateStuff();
+    }
+    private void oncreateStuff(){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        Context ctx = getApplicationContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ctx);
+        Configuration.getInstance().load(getApplicationContext(), sp);
+        //setting this before the layout is inflated is a good idea
+        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
+        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
+        //see also StorageUtils
+        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's
+        //tile servers will get you banned based on this string
+
+        //inflate and create the map
+        setContentView(R.layout.activity_main);
+        //BoundingBox box = new BoundingBox(49.002389,  -66.949895, 24,-124.733056);
+        //map.setScrollableAreaLimitDouble(new BoundingBox(49.002389,  -66.949895, 24,-124.733056));
+        map = (MapView) findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        BoundingBox box = new BoundingBox(49.002389, -66.949895, 24, -124.733056);
+        map.setScrollableAreaLimitDouble(box);
+        IMapController mapController = map.getController();
+        mapController.setZoom(4.4);
+        map.setMinZoomLevel(4.4);
+        MapEventsReceiver mReceive = new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                double[] latLong = new double[2];
+                latLong[0]=p.getLatitude();
+                latLong[1]=p.getLongitude();
+                try {
+                    Toast.makeText(getBaseContext(), GetFromAPI.testMotiAPI(latLong),Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //setContentView(R.layout.activity_details);
+
+                return false;
+            }
+
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                return false;
+            }
+        };
+        MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
+        map.getOverlays().add(OverlayEvents);
+        requestPermissionsIfNecessary(new String[] {
+                // if you need to show the current location, uncomment the line below
+                // Manifest.permission.ACCESS_FINE_LOCATION,
+                // WRITE_EXTERNAL_STORAGE is required in order to show the map
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        });
     }
 }
