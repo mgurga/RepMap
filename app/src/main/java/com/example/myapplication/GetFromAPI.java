@@ -37,28 +37,43 @@ public class GetFromAPI {
         }
     }
     public static String getPostal(double[] in) throws IOException, JSONException {
-        JSONObject json = readJsonFromUrl("http://open.mapquestapi.com/geocoding/v1/reverse?key=SAd4Ez053FHMazmKomIl1l87zIrtLmFO&location="+in[0]+","+in[1]+"&includeRoadMetadata=false&includeNearestIntersection=false\\\\r\\\\n");
+        JSONObject json = readJsonFromUrl("https://open.mapquestapi.com/geocoding/v1/reverse?key=SAd4Ez053FHMazmKomIl1l87zIrtLmFO&location="+in[0]+","+in[1]+"&includeRoadMetadata=false&includeNearestIntersection=false\\\\r\\\\n");
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
         return root.getAsJsonObject().get("results").getAsJsonArray().get(0).getAsJsonObject().get("locations").getAsJsonArray().get(0).getAsJsonObject().get("postalCode").toString().replaceAll("\"","");
     }
     public static String getState(double[] in) throws IOException, JSONException {
-        JSONObject json = readJsonFromUrl("http://open.mapquestapi.com/geocoding/v1/reverse?key=SAd4Ez053FHMazmKomIl1l87zIrtLmFO&location="+in[0]+","+in[1]+"&includeRoadMetadata=false&includeNearestIntersection=false\\\\r\\\\n");
+        JSONObject json = readJsonFromUrl("https://open.mapquestapi.com/geocoding/v1/reverse?key=SAd4Ez053FHMazmKomIl1l87zIrtLmFO&location="+in[0]+","+in[1]+"&includeRoadMetadata=false&includeNearestIntersection=false\\\\r\\\\n");
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
         return root.getAsJsonObject().get("results").getAsJsonArray().get(0).getAsJsonObject().get("locations").getAsJsonArray().get(0).getAsJsonObject().get("adminArea3").toString().replaceAll("\"","");
     }
-    public static String testMotiAPI(double[] in) throws IOException, JSONException {
+    public static String getRepAPI(double[] in) throws IOException, JSONException {
         JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
         try{
             String a = root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)).toString().replaceAll("\"","");
-            return root.getAsJsonObject().get("districts").getAsJsonArray().get(Integer.parseInt(a)).toString().replaceAll("\"","");
+            //JsonObject out = root.getAsJsonObject().get("districts").getAsJsonArray().get(Integer.parseInt(a)).getAsJsonObject();
+            JsonObject out = new JsonObject();
+            out.add("alldistricts", root.getAsJsonObject().get("districts"));
+            out.add("districtnum", root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)));
+            return out.toString();
+        }catch (Exception e){
+            return "error";
+        }
+
+    }
+    public static String getRepAPIDistricts(double[] in) throws IOException, JSONException {
+        JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
+        JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
+        try{
+            String a = root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)).toString().replaceAll("\"","");
+            return root.getAsJsonObject().get("districts").toString().replaceAll("\"","");
         }catch (Exception e){
             return "error";
         }
 
     }
     public static JsonObject repDetails(double[] in) throws IOException, JSONException {
-        JsonElement root = new Gson().fromJson(testMotiAPI(in), JsonElement.class);
+        JsonElement root = new Gson().fromJson(getRepAPI(in), JsonElement.class);
         return root.getAsJsonObject();
     }
 }

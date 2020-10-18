@@ -1,7 +1,10 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -9,12 +12,15 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.osmdroid.api.IMapController;
@@ -39,6 +45,8 @@ public class MainActivity extends AppCompatActivity{
 
         //load/initialize the osmdroid configuration, this can be done
         oncreateStuff();
+
+        Log.d("AAA", "started");
     }
 
     @Override
@@ -124,17 +132,30 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
                 double[] latLong = new double[2];
+                String apiout = "";
                 latLong[0]=p.getLatitude();
                 latLong[1]=p.getLongitude();
+                Log.d("AAA", "got long lat: " + latLong[0] + ", " + latLong[1]);
                 try {
-                    Toast.makeText(getBaseContext(), GetFromAPI.testMotiAPI(latLong),Toast.LENGTH_SHORT).show();
+                    apiout = GetFromAPI.getRepAPI(latLong);
+                    //Toast.makeText(getBaseContext(), apiout, Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                Log.d("AAA", "api output: " + apiout);
 
+                if(!apiout.equals("error") && !(apiout == null)) {
+                    Intent intent = new Intent(MainActivity.this, DistrictInfo.class);
+                    intent.putExtra("apiout", apiout);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, android.R.anim.fade_out);
+                } else {
+                    Log.d("AAA", "API BAD");
+                    Toast.makeText(getBaseContext(), "api returned error, not continuing", Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
 
