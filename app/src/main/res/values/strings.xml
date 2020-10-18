@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">RepMap</string>
     <string name="Representatives">Representatives</string>
     <string name="Democrat">Democrat</string>
     <string name="Republican">Republican</string>

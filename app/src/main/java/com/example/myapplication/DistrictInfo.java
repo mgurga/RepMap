@@ -64,7 +64,7 @@ public class DistrictInfo extends Activity {
 
     public void createDistricList() {
 
-        createDistricElement(districtnum);
+        createDistricElement(districtnum - 1);
 
         TextView otherDistricts = new TextView(this);
         otherDistricts.setText(getString(R.string.OtherDistricsIn) + " " + districtStateAbbr);
@@ -74,8 +74,8 @@ public class DistrictInfo extends Activity {
 
         dislayout.addView(otherDistricts);
 
-        for(int i = 0; i < alldistricts.size()-1; i++) {
-            if(!(i == districtnum)) {
+        for(int i = 0; i < alldistricts.size(); i++) {
+            if(!(i == districtnum-1)) {
                 if(!(i == 0)) {
                     ImageView divider = new ImageView(this);
                     LinearLayout.LayoutParams lp =
@@ -115,7 +115,7 @@ public class DistrictInfo extends Activity {
                         1.0f);
         matchparent.setMargins(20, 0, 20, 0);
 
-        if(distnum == districtnum) {
+        if(distnum == districtnum - 1) {
             eleLayout.setBackgroundColor(0xADD8E600);
             selectedlayout = eleLayout;
         }
