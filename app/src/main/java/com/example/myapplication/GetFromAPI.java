@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,12 +51,14 @@ public class GetFromAPI {
     public static String getRepAPI(double[] in) throws IOException, JSONException {
         JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
+
         try{
             String a = root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)).toString().replaceAll("\"","");
             //JsonObject out = root.getAsJsonObject().get("districts").getAsJsonArray().get(Integer.parseInt(a)).getAsJsonObject();
             JsonObject out = new JsonObject();
             out.add("alldistricts", root.getAsJsonObject().get("districts"));
             out.add("districtnum", root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)));
+            out.add("districtstate", new JsonPrimitive(getState(in)));
             return out.toString();
         }catch (Exception e){
             return "error";
@@ -64,6 +68,7 @@ public class GetFromAPI {
     public static String getRepAPIDistricts(double[] in) throws IOException, JSONException {
         JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
+
         try{
             String a = root.getAsJsonObject().get("zipcodes").getAsJsonObject().get(getPostal(in)).toString().replaceAll("\"","");
             return root.getAsJsonObject().get("districts").toString().replaceAll("\"","");

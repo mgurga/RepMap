@@ -35,6 +35,7 @@ public class DistrictInfo extends Activity {
     JsonArray alldistricts;
     int districtnum;
     LinearLayout selectedlayout;
+    String districtStateAbbr;
     ScrollView scoller;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class DistrictInfo extends Activity {
 
         alldistricts = apijson.getAsJsonObject().get("alldistricts").getAsJsonArray();
         districtnum = apijson.getAsJsonObject().get("districtnum").getAsInt();
+        districtStateAbbr = apijson.getAsJsonObject().get("districtstate").getAsString();
 
         dislayout = findViewById(R.id.districtlayout);
         scoller = findViewById(R.id.scroller);
@@ -65,25 +67,25 @@ public class DistrictInfo extends Activity {
         createDistricElement(districtnum);
 
         TextView otherDistricts = new TextView(this);
-        otherDistricts.setText("Other Districts in the state:");
+        otherDistricts.setText(getString(R.string.OtherDistricsIn) + " " + districtStateAbbr);
         otherDistricts.setTextSize(20);
         otherDistricts.setSingleLine(false);
         otherDistricts.setGravity(center);
 
         dislayout.addView(otherDistricts);
 
-        for(int i = 0; i < alldistricts.size(); i++) {
-            if(!(i == 0)) {
-                ImageView divider = new ImageView(this);
-                LinearLayout.LayoutParams lp =
-                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(10, 10, 10, 10);
-                divider.setLayoutParams(lp);
-                divider.setBackgroundColor(Color.WHITE);
-                dislayout.addView(divider);
-            }
-
+        for(int i = 0; i < alldistricts.size()-1; i++) {
             if(!(i == districtnum)) {
+                if(!(i == 0)) {
+                    ImageView divider = new ImageView(this);
+                    LinearLayout.LayoutParams lp =
+                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(10, 10, 10, 10);
+                    divider.setLayoutParams(lp);
+                    divider.setBackgroundColor(Color.WHITE);
+                    dislayout.addView(divider);
+                }
+
                 createDistricElement(i);
             }
         }
@@ -119,7 +121,7 @@ public class DistrictInfo extends Activity {
         }
 
         TextView title = new TextView(this);
-        title.setText(distdata.get("num").toString().replaceAll("\"", "") + " District");
+        title.setText(distdata.get("num").toString().replaceAll("\"", "") + " " + getString(R.string.District));
         title.setTextSize(26);
         title.setLayoutParams(matchparent);
         title.setSingleLine(false);
@@ -136,29 +138,29 @@ public class DistrictInfo extends Activity {
 
         TextView party = new TextView(this);
         String rawparty = distdata.get("party").toString().replaceAll("\"", "");
-        String out = "";
+        String out = getString(R.string.PoliticalParty) + ": ";
         if(rawparty.equals("R")) {
-            out = "Republican";
+            out += getString(R.string.Republican);
         } else if(rawparty.equals("D")) {
-            out = "Democrat";
+            out += getString(R.string.Democrat);
         } else {
-            out = "Other (" + rawparty + ")";
+            out += getString(R.string.OtherParty) + " (" + rawparty + ")";
         }
-        party.setText("Party: " + out);
+        party.setText(out);
         party.setTextSize(14);
         party.setSingleLine(false);
         party.setLayoutParams(matchparent);
         eleLayout.addView(party);
 
         TextView phone = new TextView(this);
-        phone.setText("Phone Number: " + distdata.get("phone").toString().replaceAll("\"", ""));
+        phone.setText(getString(R.string.PhoneNumber) + ": " + distdata.get("phone").toString().replaceAll("\"", ""));
         phone.setTextSize(14);
         phone.setSingleLine(false);
         phone.setLayoutParams(matchparent);
         eleLayout.addView(phone);
 
         TextView office = new TextView(this);
-        office.setText("Office Room: " + distdata.get("officeroom").toString().replaceAll("\"", ""));
+        office.setText(getString(R.string.OfficeRoom) + ": " + distdata.get("officeroom").toString().replaceAll("\"", ""));
         office.setTextSize(14);
         office.setSingleLine(false);
         office.setLayoutParams(matchparent);
