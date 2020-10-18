@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="Representatives">Representatives</string>
+    <string name="Democrat">Democrat</string>
+    <string name="Republican">Republican</string>
+    <string name="PoliticalParty">Party</string>
+    <string name="PhoneNumber">Phone Number</string>
+    <string name="OfficeRoom">Office Room</string>
+    <string name="Assignments">Assignments</string>
+    <string name="OtherParty">Other</string>
+    <string name="District">District</string>
+    <string name="OtherDistricsIn">Other Districts in </string>
 </resources>
