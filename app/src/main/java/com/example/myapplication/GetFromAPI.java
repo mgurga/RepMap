@@ -49,7 +49,7 @@ public class GetFromAPI {
         return root.getAsJsonObject().get("results").getAsJsonArray().get(0).getAsJsonObject().get("locations").getAsJsonArray().get(0).getAsJsonObject().get("adminArea3").toString().replaceAll("\"","");
     }
     public static String getRepAPI(double[] in) throws IOException, JSONException {
-        JSONObject json = readJsonFromUrl("http://149.28.227.170:5678/stateabbr/"+getState(in));
+        JSONObject json = readJsonFromUrl("http://10.0.2.2:8080/stateabbr/"+getState(in));
         JsonElement root = new Gson().fromJson(json.toString(), JsonElement.class);
 
         try{
